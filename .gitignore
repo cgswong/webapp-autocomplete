@@ -1,0 +1,24 @@
+# General
+*.zip
+
+# IntelliJ project folder
+*.idea
+
+# Mac trashcan
+.DS_Store
+
+# Serverless droppings
+.requirements
+.serverless
+venv
+vendored
+package-lock.json
+
+# Package droppings
+.pkg
+node_modules
+
+# Terraform droppings
+*.tfstate*
+.terraform
+*tfplan

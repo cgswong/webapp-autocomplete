@@ -19,6 +19,10 @@ handlers:
   upload: .+\.(gif|png|jpg)$
   application_readable: true
 
+# Default page handler
+- url: /.*
+  script: form.html
+  
 # Load Cloud Datastore
 - url: /loaddatastore
   script: loadatastore.php

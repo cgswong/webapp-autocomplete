@@ -57,11 +57,11 @@ function load_datastore($projectId, $url) {
 
 try
 {
-	$projectId = 'development';
+	$projectId = 'development-206303';
 	$url = 'https://raw.githubusercontent.com/BestBuyAPIs/open-data-set/master/products.json';
 	load_datastore($projectId, $url);
 } catch (Exception $err) {
 	echo 'Caught exception: ',  $err->getMessage(), "\n";
-  $transaction->rollback();
+  //$transaction->rollback();
 }
 ?>

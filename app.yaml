@@ -23,7 +23,7 @@ handlers:
   application_readable: true
 
 # Default page handler
-- url: /form
+- url: /.*
   script: form.html
   
 # Load Cloud Datastore

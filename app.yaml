@@ -1,0 +1,33 @@
+api_version: 1
+runtime: php55
+instance_class: F1
+service: product-autosuggest
+
+threadsafe: true
+
+inbound_services:
+- warmup
+
+automatic_scaling:
+  min_idle_instances: 1
+  max_pending_latency: 1s
+  
+handlers:
+# Serve images as static resources.
+- url: /(.+\.(gif|png|jpg))$
+  static_files: \1
+  upload: .+\.(gif|png|jpg)$
+  application_readable: true
+
+# Load Cloud Datastore
+- url: /loaddatastore
+  script: loadatastore.php
+
+# Serve php scripts.
+- url: /(.+\.php)$
+  script: \1
+
+# Warm up requests for Memcache
+- url: /_ah/warmup
+  script: warmup.php
+  login: admin

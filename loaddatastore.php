@@ -4,56 +4,64 @@ require 'vendor/autoload.php';
 use Google\Auth\ApplicationDefaultCredentials;
 use Google\Cloud\Datastore\DatastoreClient;
 
+/**
+ * Create a new product with a given SKU.
+ *
+ * @param DatastoreClient $datastore
+ * @param $sku
+ * @param $product
+ * @return Google\Cloud\Datastore\Entity
+ */
+function add_product(DatastoreClient $datastore, $sku, $product)
+{
+    $productKey = $datastore->key('SKU', $sku);
+    $product = $datastore->entity(
+        $productKey,
+        [
+            'created' => new DateTime(),
+            'name' => strtolower($product)
+        ]);
+    $datastore->upsert($product);
+    return $product;
+}
+
 /*
-  Load Cloud DataStore Kind from Cloud Storage object/file
+  Load Cloud DataStore Kind from remote URL
 
-  @param DataStoreClient $datastore
-  @param Bucket $bucketName
-  @param Object $objectName
+  @param $projectId
+  @param $url
 */
-function datastore_gs_load(
-  DataStoreClient $datastore,
-  Bucket $bucketName,
-  Object $objectName
-) {
-  // Imports the Google Cloud Storage client library
-  use Google\Cloud\Storage\StorageClient;
+function load_datastore($projectId, $url) {
+  // Create Datastore client
+  $datastore = new DatastoreClient(['projectId' => $projectId]);
 
-  $config = [
-      'projectId' => $projectId,
-  ];
+  // Enable `allow_url_fopen` to allow reading file from URL
+  ini_set("allow_url_fopen", 1);
 
-  $storage = new StorageClient($config);
-
-  $bucket = $storage->bucket($bucketName);
-  $object = $bucket->object($objectName);
-
-  // Download products listing to local file
-  $stream = $object->downloadToFile(__DIR__ . '/tmp/products.txt');
+  // Read the products listing and load to Cloud Datastore.
+  // Use batches of 20 for a transaction
+  $json = json_decode(file_get_contents($url), true);
+  $count = 1;
+  foreach($json as $sku_key => $product_val) {
+    if ($count == 1) {
+		  $transaction = $datastore->transaction();
+    }
+    add_product($datastore, $sku_key, $product_val);
+		if ($count == 20) {
+		  $transaction->commit();
+		  $count = 0;
+    }
+    $count++;
+  }
 }
 
 try
 {
-	$projectId = 'location360-poc';
-	$datastore = new DatastoreClient([
-	    'projectId' => $projectId
-	]);
-
-  // Treat each entity (UPSERT) as a transaction.
-  // Ensures we only fail/ROLLBACK individual entities, but not as efficient as batch
-  // which can go up to 25 entity groups or 500 entities in a commit limit
-  // TODO: Use batch writes (upsertBatch in 25 entity group, or 500 entities in a commit limit)
-	if (sizeof($argv) == 3) {
-		$transaction = $datastore->transaction();
-		$key = $datastore->key('SKU', $argv[1]);
-		$product = $datastore->entity( $key, [
-			'name' => strtolower($argv[2])
-		]);
-		$datastore->upsert($product);
-		$transaction->commit();
-	}
-} catch (Exception $e) {
-	echo 'Caught exception: ',  $e->getMessage(), "\n";
+	$projectId = 'development';
+	$url = 'https://raw.githubusercontent.com/BestBuyAPIs/open-data-set/master/products.json';
+	load_datastore($projectId, $url);
+} catch (Exception $err) {
+	echo 'Caught exception: ',  $err->getMessage(), "\n";
   $transaction->rollback();
 }
 ?>

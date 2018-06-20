@@ -5,18 +5,15 @@ use Google\Cloud\Datastore\DatastoreClient;
 
 try
 {
-	$mem = new Memcached();
-	$mem->addServer("127.0.0.1", 11211);
+	$mem = new Memcache();
 
-	$projectId = 'location360-poc';
-	$datastore = new DatastoreClient([
-	    'projectId' => $projectId
-	]);
+	$projectId = 'development';
+	$datastore = new DatastoreClient(['projectId' => $projectId]);
 
 	echo 'Matches:<br/>';
 	$matches_string = "";
 
-	// Get the string typed in by user for autocompletion...
+	// Get the string typed in by user for autosuggestion...
 	$queryval = strtolower($_GET['searchtext']);
 
 	// If it is not blank...

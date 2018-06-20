@@ -5,6 +5,9 @@ service: product-autosuggest
 
 threadsafe: true
 
+skip_files:
+  - products.json
+  
 inbound_services:
 - warmup
 

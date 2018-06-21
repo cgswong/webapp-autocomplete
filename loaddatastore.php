@@ -42,11 +42,11 @@ function load_datastore($projectId, $url) {
   // Use batches of 20 for a transaction
   $json = json_decode(file_get_contents($url), true);
   $count = 1;
-  foreach($json as $sku_key => $product_val) {
+  foreach($json as $key => $value) {
     if ($count == 1) {
 		  $transaction = $datastore->transaction();
     }
-    add_product($datastore, $sku_key, $product_val);
+    add_product($datastore, $value["sku"], $value["name"]);
 		if ($count == 20) {
 		  $transaction->commit();
 		  $count = 0;

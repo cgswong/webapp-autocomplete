@@ -16,25 +16,25 @@ automatic_scaling:
   max_pending_latency: 1s
   
 handlers:
+# Load Cloud Datastore
+- url: /loaddatastore
+  script: loadatastore.php
+
+# Warm up requests for Memcache
+- url: /_ah/warmup
+  script: warmup.php
+  login: admin
+
 # Serve images as static resources.
 - url: /(.+\.(gif|png|jpg))$
   static_files: \1
   upload: .+\.(gif|png|jpg)$
   application_readable: true
 
-# Default page handler
-- url: /.*
-  script: form.html
-  
-# Load Cloud Datastore
-- url: /loaddatastore
-  script: loadatastore.php
-
 # Serve php scripts.
 - url: /(.+\.php)$
   script: \1
-
-# Warm up requests for Memcache
-- url: /_ah/warmup
-  script: warmup.php
-  login: admin
+  
+# Default page handler
+- url: /.*
+  script: form.html

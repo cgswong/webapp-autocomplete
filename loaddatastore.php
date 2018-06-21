@@ -12,14 +12,14 @@ use Google\Cloud\Datastore\DatastoreClient;
  * @param $product
  * @return Google\Cloud\Datastore\Entity
  */
-function add_product(DatastoreClient $datastore, $sku, $product)
+function add_product(DatastoreClient $datastore, $sku, $prod)
 {
     $productKey = $datastore->key('SKU', $sku);
     $product = $datastore->entity(
         $productKey,
         [
             'created' => new DateTime(),
-            'name' => strtolower($product)
+            'name' => strtolower($prod)
         ]);
     $datastore->upsert($product);
     return $product;

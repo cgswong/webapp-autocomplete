@@ -7,7 +7,7 @@ try
 {
 	$mem = new Memcache();
 
-	$projectId = 'development--206303';
+	$projectId = 'development-206303';
 	$datastore = new DatastoreClient(['projectId' => $projectId]);
 
 	echo 'Matches:<br/>';
@@ -45,7 +45,7 @@ try
 		}
 		echo $matches_string;
 	}
-} catch (Exception $e) {
-	echo 'Caught exception: ',  $e->getMessage(), "\n";
+} catch (Exception $err) {
+	echo 'Caught exception: ',  $err->getMessage(), "\n";
 }
 ?>

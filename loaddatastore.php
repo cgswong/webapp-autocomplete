@@ -47,12 +47,12 @@ function batch_load_datastore($projectId, $url) {
   $products = array();
   $count = 0;
   foreach($json as $key => $value) {
-    $productKeys[] = $datastore->key('SKU-BATCH', $key);
+    $productKeys[] = $datastore->key('SKU-BATCH', $value["sku"]);
     $products[] = $datastore->entity(
         $productKeys[$count],
         [
             'created' => new DateTime(),
-            'name' => $value
+            'name' => $value["name"]
         ]);
     $count++;
   

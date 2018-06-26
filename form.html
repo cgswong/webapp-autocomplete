@@ -76,12 +76,33 @@
 </head>
 
 <body>
-    <form action="upload.php" method="post" enctype="multipart/form-data" style="font-family:Tahoma">
-        Product search:<br/><br/>
-        <input type="text" oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" autofocus><br/>
-        <br/>
-        <div id="output" style="border: 1px solid black">Watch out for AJAX output here</div>
-    </form>
+    <div class="container">
+        <div class="row jumbotron">
+            <div role="main">
+                <form action="upload.php" method="post" id="userForm" enctype="multipart/form-data" style="font-family:Tahoma">
+                    <h3>Product</h3>
+                    <div class="form-group">
+                        <label for="frmProduct" class="col-lg-2 control-label">Product</label>
+                        <div class="col-lg-10">
+                            <input name="product-name" class="form-control validate" required id="frmProduct" autocomplete="Product name" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
+                        <div class="col-lg-10">
+                            <input name="productds-name" class="form-control validate" required id="frmProductDS" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
 </body>
 
 </html>

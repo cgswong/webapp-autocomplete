@@ -1,9 +1,0 @@
-api_version: 1
-runtime: php55
-service: sync-service
-instance_class: B1
-
-threadsafe: true
-
-manual_scaling:
-  instances: 1

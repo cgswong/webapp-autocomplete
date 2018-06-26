@@ -17,6 +17,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
 
+    <!-- typeahead setup -->
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-3.0.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://github.com/corejavascript/typeahead.js/raw/master/dist/typeahead.bundle.js"></script>
+    <script src="https://github.com/corejavascript/typeahead.js/raw/master/dist/bloodhound.js"></script>
+    <script type="text/javascript" src="typeahead.js"></script>
+    <link href="typeahead.css" rel="stylesheet" />
+
+    <script type="text/javascript" rel="stylesheet">
+        $(document).ready(function() {
+            var products = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                local: ["Engerginer", "Expedia"]
+                //local: 'calldatastore.php'
+            });
+
+            // Use a minimum character length, 3, before suggestions start...
+            // highlight the suggestion...
+            // limit the number of suggestions, 10
+            $('#productsuggest .typeahead').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                name: 'product-entry',
+                display: 'name',
+                limit: 10,
+                source: products
+            });
+        });
+    </script>
+
     <script type="text/javascript">
         function OnInput(event) {
             var textdata = event.target.value;
@@ -90,7 +123,7 @@
                     <div class="form-group">
                         <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
                         <div class="col-lg-10">
-                            <input name="productds-name" class="form-control validate" required id="productsuggestds" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
+                            <input name="productds-name" class="form-control validate typeahead" required id="productsuggest" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
                         </div>
                     </div>
                 </form>

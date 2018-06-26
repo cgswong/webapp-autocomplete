@@ -26,6 +26,11 @@ handlers:
   script: warmup.php
   login: admin
 
+# Cleanup Datastore Kind
+- url: /_ah/delete_all
+  script: delete_all.php
+  login: admin
+
 # Serve images as static resources.
 - url: /(.+\.(gif|png|jpg))$
   static_files: \1

@@ -1,0 +1,34 @@
+/* highlight results */
+
+.ui-autosuggest hl_results {
+    background-color: #ffff66;
+}
+
+/* loading - the AJAX indicator */
+
+.ui-autosuggest-loading {
+    background: white url('../img/ui-anim_basic_16x16.gif') right center no-repeat;
+}
+
+/* scroll results */
+
+.ui-autosuggest {
+    max-height: 250px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+    /* add padding for vertical scrollbar */
+    padding-right: 5px;
+}
+
+.ui-autosuggest li {
+    font-size: 16px;
+}
+
+/* IE 6 doesn't support max-height
+* we use height instead, but this forces the menu to always be this tall
+*/
+
+* html .ui-autosuggest {
+    height: 250px;
+}

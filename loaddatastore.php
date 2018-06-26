@@ -54,6 +54,9 @@ function batch_load_datastore($projectId, $url) {
             'created' => new DateTime(),
             'name' => $value["name"]
         ]);
+    if ($count % 450 == 0) {
+      $datastore->upsertBatch($products);
+    }
     $count++;
   
   $datastore->upsertBatch($products);

@@ -4,7 +4,8 @@ $(document).ready(function() {
   var products = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: 'calldatastore.php'
+    remote: 'calldatastore.php?searchtext=%QUERY',
+    wildcard: '%QUERY'
   });
 
   // Use a minimum character length, 3, before suggestions start...
@@ -17,6 +18,11 @@ $(document).ready(function() {
     name: 'product-entry',
     display: 'name',
     limit: 10,
+    templates: {
+      suggestion: function(data) {
+        return '<div>' + data.name + '</div>';
+      }
+    },
     source: products
   });
 });

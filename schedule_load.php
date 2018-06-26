@@ -21,4 +21,11 @@ function schedule_load()
   $task_name = $task->add('dataload');
 }
 
+try
+{
+	schedule_load;
+} catch (Exception $err) {
+	echo 'Caught exception: ',  $err->getMessage(), PHP_EOL;
+}
+
 ?>

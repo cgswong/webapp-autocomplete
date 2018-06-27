@@ -9,26 +9,39 @@
     <meta name="author" content="Stuart Wong | cgs.wong@gmail.com | @cgswong">
     <meta name="theme-color" content="#db5945">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" crossorigin="anonymous">
 
     <title>Product Auto Suggest Demo</title>
 
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/autosuggest.css">
 
     <!-- typeahead stylesheet -->
-    <link rel="stylesheet" type="text/css" href="typeahead.css" />
+    <link rel="stylesheet" type="text/css" href="css/typeaheadjs.css" />
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+    <!-- typeahead JavaScript -->
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.js"></script>
+    <script type="text/javascript" src="js/bootstrap3-typeahead.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/bloodhound.js"></script>
 
     <script type="text/javascript" rel="stylesheet">
         $(document).ready(function() {
             var products = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace(),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: 'calldatastore.php?searchtext=%QUERY',
                 wilcard: '%QUERY'
             });
 
+            products.initialize();
             // Use a minimum character length, 3, before suggestions start...
             // highlight the suggestion...
             // limit the number of suggestions, 10
@@ -36,8 +49,8 @@
                 minLength: 3,
                 highlight: true
             }, {
-                name: 'product-entry',
-                display: 'name',
+                name: 'product-name',
+                display: 'productsuggest',
                 limit: 10,
                 templates: {
                     suggestion: function(data) {
@@ -66,7 +79,7 @@
         }
 
         function drawOutput(responseText) {
-            var container = document.getElementById('productsuggest');
+            var container = document.getElementById('output');
             container.innerHTML = responseText;
         }
 
@@ -122,25 +135,14 @@
                     <div class="form-group">
                         <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
                         <div class="col-lg-10">
-                            <input name="productds-name" class="form-control validate typeahead" required id="productsuggest" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
+                            <input name="productds-name" class="form-control validate typeahead" required id="productcomplete" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
+                            <output name="product-results" id="output">Watch for query autocomplete here</output>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
-
-    <!-- typeahead JavaScript -->
-    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.js"></script>
-    <script type="text/javascript" src="https://raw.githubusercontent.com/bassjobsen/Bootstrap-3-Typeahead/master/bootstrap3-typeahead.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/bloodhound.js"></script>
-
 </body>
 
 </html>

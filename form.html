@@ -35,7 +35,7 @@
     <script type="text/javascript" rel="stylesheet">
         $(document).ready(function() {
             var products = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace(),
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Matches'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: 'calldatastore.php?searchtext=%QUERY',
                 wilcard: '%QUERY'
@@ -129,7 +129,7 @@
                     <div class="form-group">
                         <label for="frmProduct" class="col-lg-2 control-label">Product</label>
                         <div class="col-lg-10">
-                            <input name="product-name" class="form-control validate" required id="productsuggest" autocomplete="Product name" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
+                            <input name="product-name" class="form-control validate" required id="productsuggest" autocomplete="Product name" autofocus data-provide="typeahead">
                         </div>
                     </div>
                     <div class="form-group">

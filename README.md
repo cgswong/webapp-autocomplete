@@ -6,9 +6,7 @@ This is a simple demo PHP web application that showcases a web autocomplete feat
 
 - [] error handling
 - [] logging
-- [] performance optimization - use a connection-pool to Cloud Datastore instead of connecting each time a key is pressed
-- [] [Google Cloud Memorystore](https://cloud.google.com/memorystore/) (beta) for shared caching
-- [] Fuzzy search, i.e. "CONTAINS" or "IN"
+- [] Improved fuzzy search, i.e. "CONTAINS" or "IN"
 - [] case insensitive searching
 - [] popular or context aware search functionality
 
@@ -100,7 +98,7 @@ This is a simple demo PHP web application that showcases a web autocomplete feat
 
   **Note**: There should be a vendor directory created under `/var/www/html` with an `autoload.php` file which provides [PHP autoloading](http://php.net/manual/en/language.oop5.autoload.php) functionality.
 
-10. Change the PHP code, line `$projectId = 'location360-poc';`, in both `loaddatastore.php` and `calldatastore.php` to point at *your* project. You can find your project ID in your Google Cloud Console.
+10. Change the PHP code, line `$projectId = 'development-206303';`, in both `loaddatastore.php` and `calldatastore.php` to point at *your* project. You can find your project ID in your Google Cloud Console.
 
 ### Load test data into Cloud Datastore
 
@@ -110,7 +108,7 @@ This is a simple demo PHP web application that showcases a web autocomplete feat
 
   * Ensure the shell script is executable, set `chmod +x <filename>` on it if needed.
   * There are almost 52K records in `products.json`, so this command will take around 5 hours to complete due to how loading is done, i.e. a commit per line/object in the file.
-  * The shell script that loads the data, including the PHP file that it calls repeatedly for each line, is **poorly optimized** (quite frankly it is embarrassingly horrible). It connects to Cloud Datastore for every line on the JSON file, and runs a tight loop writing the entities into Cloud Datastore. I have used `sed` to extract the "SKU" and the "Product Name" fields only. The intent is to only demo auto-complete on the "Product" name, hence...
+  * The shell script that loads the data, i.e. the PHP file that it calls, is **poorly optimized** (quite frankly it is embarrassingly horrible). It connects to Cloud Datastore, and does row based upserts in batches into Cloud Datastore. I have filtered the "SKU" and the "Product Name" fields for the purposes of this demo. The intent is to only demo auto-complete on the "Product" name.
   * Ensure this command is run in a manner where a connection break will not affect the loading, and take a break as it will take a while.
 
 ### Demo auto-complete!
@@ -121,18 +119,18 @@ After loading is complete, go back to the `form.html` on the browser, start typi
 
 You might notice that the first time you type in a letter, it takes a little while to show the results. But if you type the same sequence of letters again, the results show up a lot quicker. This is because we are using Memcache to cache the results for every unique letter-sequence in the code.
 
-Still feeling a sluggish? No wonder! Though we have used caching, performance optimization is still **quite poor** in this demo as of now. As you type, every key-press results in a call to Cloud Datastore, but instead of connection-pooling, the code creates a new connection every time. That is not good, especially if you care about the end user's experience for auto-complete.
+Still feeling a bit sluggish? Try adjusting the delay timer which controls the delay following a keypress that a lookup is done. This is done to avoid a lookup after each keypress as it is not only costly (GDS costs), but not that necessary.
 
 ### Clean-up
 
-Do not forget to stop the VM, remove the GAE App and clean up Cloud Datastore. This is a metered platform, treat it like your own electricity bill, even if you are using an account with credits!
+Do not forget to stop the VM, and/or remove the GAE App, and clean up Cloud Datastore. This is a metered platform, treat it like your own electricity bill, even if you are using an account with credits!
 
 ## Design Notes
 
-- GQL queries used against Cloud Datastore are case-sensitive. That is why `strtolower(...)` in the file `loaddatastore.php` is used, so all records are stored in Cloud Datastore in lowercase. This means if there is a product called "Laptop", it will match if you start typing "laptop". but it will *not* match if you start typing "Laptop" unless we convert the typed text to lowercase before issuing the query.
+- GQL queries used against Cloud Datastore are case-sensitive. That is why `strtolower(...)` in the file `loaddatastore.php` is used, so all records are stored in Cloud Datastore in lowercase. Before sending the query to GDS, `strtolower`, is also used on the sent input. This allows us to do case insensitive searches, though it does affect the returned results since they will all be in lower case.
 
-- Cloud Datastore query does not appear to support fuzzy search such as "CONTAINS" or "IN" comparisons, so typing something like "top" will **not** find a product with "top" in the name such as "laptop", only something that starts with "top" such as "topin". Fuzzy search such as "IN" or "CONTAINS" should be possible with GQL, for example, `SELECT name FROM sku WHERE name CONTAINS '$queryval'`.
+- Cloud Datastore query does not appear to support fuzzy search such as "CONTAINS" or "IN" comparisons, so typing something like "top" will **not** find a product with "top" in the name such as "laptop", only something that starts with "top" such as "topin". To get around this, we use `strtolower` on both the uploaded data, and search input data. The better way around this is use to store a lowercased version of the entity along with the original, which is used in our search, while the original (i.e. mixed case) entity is returned for autocomplete.
 
-- Using a local Memcache for this type of use case is okay. That is, consistency is not an overriding concern. However, availability may be an issue in which case using a centralized, distributed Memcache or Redis cluster such as Cloud Memorystore (beta) is a better option.
+- Using a local Memcache for this type of use case is okay. That is, consistency is not an overriding concern. However, availability may be an issue in which case using a centralized, distributed Memcache or Redis cluster such as Cloud Memorystore (beta) is a better option. However, given the response times from GDS is within 1 second, the additional complexity may not be worth the investment.
 
 - To implement context-aware, or a popular product search functionality, integration with something such as Cloud Dataflow, or Cloud ML Engine would be needed to learn (a basic rank would work) from what product is actually selected based on what was being typed.

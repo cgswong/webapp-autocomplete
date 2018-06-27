@@ -9,6 +9,7 @@ use Google\Cloud\Datastore\DatastoreClient;
 try
 {
 	$mem = new Memcache();
+	$mem->addServer('127.0.0.1', 11211);
 
 	$projectId = 'development-206303';
 	$datastore = new DatastoreClient(['projectId' => $projectId]);
@@ -20,8 +21,7 @@ try
 	$queryval = strtolower($_GET['searchtext']);
 
 	// If it is not blank...
-	if ($queryval[0]) {
-
+	if (isset($queryval) && !empty($queryval)) {
 		// Check local cache first for query results...
 		$cache_hit = $mem->get($queryval);
 		if ($cache_hit) {
@@ -43,8 +43,7 @@ try
 			}
 
 			// Insert query result in local cache for next time to avoid Cloud Datastore round-trip
-			// Caching for 7 days (demo)
-			$mem->set($queryval, $matches_string, 604800);
+			$mem->set($queryval, $matches_string);
 		}
 		echo $matches_string;
 	}

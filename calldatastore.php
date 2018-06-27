@@ -21,8 +21,7 @@ try
 	$queryval = strtolower($_GET['searchtext']);
 
 	// If it is not blank...
-	if ($queryval[0]) {
-
+	if (isset($queryval) && !empty($queryval)) {
 		// Check local cache first for query results...
 		$cache_hit = $mem->get($queryval);
 		if ($cache_hit) {

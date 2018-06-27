@@ -35,7 +35,19 @@ handlers:
 # Serve php scripts.
 - url: /(.+\.php)$
   script: \1
-  
+
+# Serve css resources.
+- url: /css
+  static_dir: css
+  http_headers:
+    Content-Type: text/css
+
+# Serve js resources.
+- url: /js
+  static_dir: js
+  http_headers:
+    Content-Type: text/javascript
+
 # Default page handler
 - url: /.*
   script: form.html

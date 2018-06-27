@@ -15,10 +15,12 @@
 
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="css/autosuggest.css">
+    <link rel="stylesheet" type="text/css" href="/css/autosuggest.css">
 
     <!-- typeahead stylesheet -->
-    <link rel="stylesheet" type="text/css" href="css/typeaheadjs.css" />
+    <link rel="stylesheet" type="text/css" href="/css/typeaheadjs.css" />
+
+    <link rel="stylesheet" type="text/css" href="/css/autocomplete.css" />
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -65,6 +67,17 @@
     </script>
 
     <script type="text/javascript">
+        var delayTimer;
+
+        function doSearch(event) {
+            if (delayTimer) {
+                clearTimeout(delayTimer);
+            }
+            delayTimer = setTimeout(function() {
+                OnInput(event);
+            }, 500);
+        }
+
         function OnInput(event) {
             var textdata = event.target.value;
             var phpurl = 'calldatastore.php?searchtext=' + textdata;
@@ -131,13 +144,13 @@
                     <div class="form-group">
                         <label for="frmProduct" class="col-lg-2 control-label">Product</label>
                         <div class="col-lg-10">
-                            <input name="product-name" class="form-control validate typeahead" required id="productsuggest" autocomplete="Product name" autofocus data-provide="typeahead">
+                            <input name="product-name" class="form-control validate typeahead autocomplete" required id="productsuggest" autocomplete="on" autofocus data-provide="typeahead">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
                         <div class="col-lg-10">
-                            <input name="productds-name" class="form-control validate" required id="productcomplete" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);">
+                            <input name="productds-name" class="form-control validate" required id="productcomplete" autocomplete="off" autofocus onkeyup=="doSearch(event);" onpropertychange="OnPropChanged(event);">
                             <output name="product-results" id="output">Watch for query autocomplete here</output>
                         </div>
                     </div>

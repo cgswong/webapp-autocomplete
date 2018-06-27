@@ -35,9 +35,9 @@
     <script type="text/javascript" rel="stylesheet">
         $(document).ready(function() {
             var products = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Matches'),
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace(),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
-                remote: 'calldatastore.php?searchtext=%QUERY',
+                remote: 'getproduct.php?searchtext=%QUERY',
                 wilcard: '%QUERY'
             });
 

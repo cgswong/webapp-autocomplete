@@ -46,27 +46,26 @@
             });
 
             products.initialize();
+
             // Use a minimum character length, 3, before suggestions start...
             // highlight the suggestion...
             // limit the number of suggestions, 10
-            $('#productsuggest .typeahead').typeahead({
+            $('#productsuggest').typeahead({
                 minLength: 3,
                 highlight: true
             }, {
-                name: 'product-name',
+                name: 'productsuggest',
                 display: 'productsuggest',
                 limit: 10,
-                templates: {
-                    suggestion: function(data) {
-                        return '<div>' + data.name + '</div>';
-                    }
-                },
-                source: products
+                source: function(query, process) {
+                    return $.get('/getproduct.php?searchtext=' + query, function(data) {
+                        return process(data);
+                    });
+                }
+                //source: products
             });
         });
-    </script>
 
-    <script type="text/javascript">
         var delayTimer;
 
         function doSearch(event) {
@@ -78,9 +77,20 @@
             }, 500);
         }
 
+        function searchGDS(event) {
+            var url = '/calldatastore.php?searchtext=' + event.target.value;
+            var req = false;
+
+            req = new XMLHttpRequest();
+            if (!req) return false;
+            req.open("GET", url, true);
+            req.send(null);
+            return req;
+        }
+
         function OnInput(event) {
             var textdata = event.target.value;
-            var phpurl = 'calldatastore.php?searchtext=' + textdata;
+            var phpurl = '/calldatastore.php?searchtext=' + textdata;
             getRequest(
                 phpurl,
                 drawOutput,
@@ -89,12 +99,12 @@
         }
 
         function drawError() {
-            var container = document.getElementById('output');
+            var container = document.getElementById('productoutput');
             container.innerHTML = 'Oops, there was an error';
         }
 
         function drawOutput(responseText) {
-            var container = document.getElementById('output');
+            var container = document.getElementById('productoutput');
             container.innerHTML = responseText;
         }
 
@@ -139,19 +149,21 @@
     <div class="container">
         <div class="row jumbotron">
             <div role="main">
-                <form action="upload.php" method="post" id="userForm" enctype="multipart/form-data" style="font-family:Tahoma">
-                    <h3>Product</h3>
+                <h3>Product</h3>
+                <form action="upload.php" method="post" id="prodSuggestForm" enctype="multipart/form-data" style="font-family:Tahoma">
                     <div class="form-group">
                         <label for="frmProduct" class="col-lg-2 control-label">Product</label>
                         <div class="col-lg-10">
-                            <input name="product-name" class="form-control validate typeahead autocomplete" required id="productsuggest" autocomplete="on" autofocus data-provide="typeahead">
+                            <input name="productsuggest" class="form-control validate typeahead autosuggest" id="productsuggest" autocomplete="off" data-provide="typeahead" autofocus required>
                         </div>
                     </div>
+                </form>
+                <form action="upload.php" method="post" id="prodCompleteForm" enctype="multipart/form-data" style="font-family:Tahoma">
                     <div class="form-group">
                         <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
                         <div class="col-lg-10">
-                            <input name="productds-name" class="form-control validate" required id="productcomplete" autocomplete="off" autofocus onkeyup=="doSearch(event);" onpropertychange="OnPropChanged(event);">
-                            <output name="product-results" id="output">Watch for query autocomplete here</output>
+                            <input name="productcomplete" class="form-control validate autocomplete" id="productcomplete" autocomplete="off" onkeyup=="doSearch(event);" onpropertychange="OnPropChanged(event);" required>
+                            <output name="productoutput" id="productoutput">Watch for query autocomplete here</output>
                         </div>
                     </div>
                 </form>

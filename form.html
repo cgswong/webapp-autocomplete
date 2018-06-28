@@ -33,7 +33,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/bloodhound.js"></script>
-    <script type="text/javascript" src="/js/autosuggest.js"></script>
 </head>
 
 <body>
@@ -45,7 +44,7 @@
                     <div class="form-group">
                         <label for="frmProduct" class="col-lg-2 control-label">Product</label>
                         <div class="col-lg-10">
-                            <input name="productsuggest" class="form-control validate typeahead autosuggest" id="productsuggest" autocomplete="off" data-provide="typeahead" autofocus required>
+                            <input name="productsuggest" class="form-control validate autocomplete" id="productsuggest" autocomplete="off" onkeyup="goSearchGDS(event.target.value);" autofocus required>
                         </div>
                     </div>
                 </form>
@@ -53,7 +52,7 @@
                     <div class="form-group">
                         <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
                         <div class="col-lg-10">
-                            <input name="productcomplete" class="form-control validate autocomplete" id="productcomplete" autocomplete="off" onkeyup="doSearch(event);" onpropertychange="OnPropChanged(event);" required>
+                            <input name="productcomplete" class="form-control validate typeahead" id="productcomplete" autocomplete="off" onkeyup="doSearch(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead" required>
                             <output name="productoutput" id="productoutput">Watch for query autocomplete here</output>
                         </div>
                     </div>
@@ -61,6 +60,8 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript" src="/js/autosuggest.js"></script>
+    <script type="text/javascript" src="/js/autocomplete.js"></script>
     <script type="text/javascript">
         var delayTimer;
 
@@ -73,15 +74,24 @@
             }, 500);
         }
 
-        function searchGDS(event) {
-            var url = '/calldatastore.php?searchtext=' + event.target.value;
+        function goSearchGDS(event) {
+            if (delayTimer) {
+                clearTimeout(delayTimer);
+            }
+            delayTimer = setTimeout(function() {
+                searchGDS(event);
+            }, 500);
+        }
+
+        function searchGDS(textdata) {
+            var url = '/getproduct.php?searchtext=' + textdata;
             var req = false;
 
             req = new XMLHttpRequest();
             if (!req) return false;
             req.open("GET", url, true);
             req.send(null);
-            return req;
+            autocomplete(document.getElementById("productsuggest"), req);
         }
 
         function OnInput(event) {

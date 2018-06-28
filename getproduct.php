@@ -42,7 +42,7 @@ try
 				$matches_string = $matches_string . $SKU['name'] . "','";
 			}
 			
-			$matches_string =  rtrim($matches_string,",'") . "']";
+			$matches_string =  rtrim($matches_string,"','") . "']";
 			// Insert query result in local cache for next time to avoid Cloud Datastore round-trip
 			$mem->set($queryval, $matches_string);
 		}

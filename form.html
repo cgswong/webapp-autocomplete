@@ -91,7 +91,7 @@
             if (!req) return false;
             req.open("GET", url, true);
             req.send(null);
-            autocomplete(document.getElementById("productsuggest"), req);
+            autocomplete(document.getElementById("productsuggest"), req.responseText);
         }
 
         function OnInput(event) {

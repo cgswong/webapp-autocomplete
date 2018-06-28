@@ -15,10 +15,12 @@
 
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="css/autosuggest.css">
+    <link rel="stylesheet" type="text/css" href="/css/autosuggest.css">
 
     <!-- typeahead stylesheet -->
-    <link rel="stylesheet" type="text/css" href="css/typeaheadjs.css" />
+    <link rel="stylesheet" type="text/css" href="/css/typeaheadjs.css" />
+
+    <link rel="stylesheet" type="text/css" href="/css/autocomplete.css" />
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -29,43 +31,62 @@
     <!-- typeahead JavaScript -->
     <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.js"></script>
-    <script type="text/javascript" src="js/bootstrap3-typeahead.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/bloodhound.js"></script>
+    <script type="text/javascript" src="/js/autosuggest.js"></script>
+</head>
 
-    <script type="text/javascript" rel="stylesheet">
-        $(document).ready(function() {
-            var products = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Matches'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                remote: 'calldatastore.php?searchtext=%QUERY',
-                wilcard: '%QUERY'
-            });
-
-            products.initialize();
-            // Use a minimum character length, 3, before suggestions start...
-            // highlight the suggestion...
-            // limit the number of suggestions, 10
-            $('#productsuggest .typeahead').typeahead({
-                minLength: 3,
-                highlight: true
-            }, {
-                name: 'product-name',
-                display: 'productsuggest',
-                limit: 10,
-                templates: {
-                    suggestion: function(data) {
-                        return '<div>' + data.name + '</div>';
-                    }
-                },
-                source: products
-            });
-        });
-    </script>
-
+<body>
+    <div class="container">
+        <div class="row jumbotron">
+            <div role="main">
+                <h3>Product</h3>
+                <form action="upload.php" method="post" id="prodSuggestForm" enctype="multipart/form-data" style="font-family:Tahoma">
+                    <div class="form-group">
+                        <label for="frmProduct" class="col-lg-2 control-label">Product</label>
+                        <div class="col-lg-10">
+                            <input name="productsuggest" class="form-control validate typeahead autosuggest" id="productsuggest" autocomplete="off" data-provide="typeahead" autofocus required>
+                        </div>
+                    </div>
+                </form>
+                <form action="upload.php" method="post" id="prodCompleteForm" enctype="multipart/form-data" style="font-family:Tahoma">
+                    <div class="form-group">
+                        <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
+                        <div class="col-lg-10">
+                            <input name="productcomplete" class="form-control validate autocomplete" id="productcomplete" autocomplete="off" onkeyup="doSearch(event);" onpropertychange="OnPropChanged(event);" required>
+                            <output name="productoutput" id="productoutput">Watch for query autocomplete here</output>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
+        var delayTimer;
+
+        function doSearch(event) {
+            if (delayTimer) {
+                clearTimeout(delayTimer);
+            }
+            delayTimer = setTimeout(function() {
+                OnInput(event);
+            }, 500);
+        }
+
+        function searchGDS(event) {
+            var url = '/calldatastore.php?searchtext=' + event.target.value;
+            var req = false;
+
+            req = new XMLHttpRequest();
+            if (!req) return false;
+            req.open("GET", url, true);
+            req.send(null);
+            return req;
+        }
+
         function OnInput(event) {
             var textdata = event.target.value;
-            var phpurl = 'calldatastore.php?searchtext=' + textdata;
+            var phpurl = '/calldatastore.php?searchtext=' + textdata;
             getRequest(
                 phpurl,
                 drawOutput,
@@ -74,12 +95,12 @@
         }
 
         function drawError() {
-            var container = document.getElementById('output');
+            var container = document.getElementById('productoutput');
             container.innerHTML = 'Oops, there was an error';
         }
 
         function drawOutput(responseText) {
-            var container = document.getElementById('output');
+            var container = document.getElementById('productoutput');
             container.innerHTML = responseText;
         }
 
@@ -118,31 +139,6 @@
             return req;
         }
     </script>
-</head>
-
-<body>
-    <div class="container">
-        <div class="row jumbotron">
-            <div role="main">
-                <form action="upload.php" method="post" id="userForm" enctype="multipart/form-data" style="font-family:Tahoma">
-                    <h3>Product</h3>
-                    <div class="form-group">
-                        <label for="frmProduct" class="col-lg-2 control-label">Product</label>
-                        <div class="col-lg-10">
-                            <input name="product-name" class="form-control validate" required id="productsuggest" autocomplete="Product name" autofocus data-provide="typeahead">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="frmProductDS" class="col-lg-2 control-label">Product (GDS)</label>
-                        <div class="col-lg-10">
-                            <input name="productds-name" class="form-control validate typeahead" required id="productcomplete" autocomplete="Product name - Datastore" autofocus oninput="OnInput(event);" onpropertychange="OnPropChanged(event);" data-provide="typeahead">
-                            <output name="product-results" id="output">Watch for query autocomplete here</output>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 </body>
 
 </html>

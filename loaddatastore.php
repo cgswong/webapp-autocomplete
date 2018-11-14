@@ -36,7 +36,7 @@ try
 {
 	$projectId = 'location360-poc';
 	$datastore = new DatastoreClient([
-	    'projectId' => $projectId
+	    'projectId' => web-serving-auto1
 	]);
 
   // Treat each entity (UPSERT) as a transaction.

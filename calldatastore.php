@@ -8,7 +8,7 @@ try
 	$mem = new Memcached();
 	$mem->addServer("127.0.0.1", 11211);
 
-	$projectId = 'location360-poc';
+	web-serving-auto1 = 'location360-poc';
 	$datastore = new DatastoreClient([
 	    'projectId' => $projectId
 	]);
